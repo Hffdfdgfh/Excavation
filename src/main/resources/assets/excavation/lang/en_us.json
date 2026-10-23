@@ -1,0 +1,7 @@
+{
+  "enchantment.excavation.pickaxe": "Excavation (Pickaxe)",
+  "enchantment.excavation.shovel": "Excavation (Shovel)",
+  "enchantment.excavation.hoe": "Excavation (Hoe)",
+  "message.excavation.disabled": "Excavation: Off",
+  "message.excavation.size": "Excavation: %s"
+}

@@ -1,0 +1,7 @@
+{
+  "enchantment.excavation.pickaxe": "Excavation (พลั่วขุดแร่)",
+  "enchantment.excavation.shovel": "Excavation (พลั่ว)",
+  "enchantment.excavation.hoe": "Excavation (จอบ)",
+  "message.excavation.disabled": "Excavation: ปิด",
+  "message.excavation.size": "Excavation: %s"
+}

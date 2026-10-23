@@ -1,0 +1,10 @@
+{
+  "description": {"translate": "enchantment.excavation.pickaxe"},
+  "supported_items": "#excavation:enchantable/pickaxes",
+  "weight": 1,
+  "max_level": 3,
+  "min_cost": {"base": 1, "per_level_above_first": 10},
+  "max_cost": {"base": 5, "per_level_above_first": 10},
+  "anvil_cost": 2,
+  "slots": ["mainhand"]
+}

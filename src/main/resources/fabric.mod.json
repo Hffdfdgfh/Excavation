@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "excavation",
+  "version": "${version}",
+  "name": "Excavation",
+  "description": "Mine a configurable square area with enchanted tools.",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.excavation.ExcavationMod"],
+    "client": ["dev.excavation.ExcavationClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
