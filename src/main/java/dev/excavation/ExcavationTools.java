@@ -33,6 +33,11 @@ public final class ExcavationTools {
     }
 
     public static int activeSize(ServerPlayer player) {
+        String type = enchantmentFor(player.getMainHandItem());
+        if (type == SHOVEL || type == HOE) {
+            return 1;
+        }
+
         int level = enchantmentLevel(player.getMainHandItem());
         int mode = ExcavationNetworking.mode(player.getUUID(), player.getInventory().getSelectedSlot());
         if (level == 0 || mode == 0 || mode > level) {
@@ -51,18 +56,15 @@ public final class ExcavationTools {
 
     public static String enchantmentFor(ItemStack stack) {
         if (stack.is(Items.WOODEN_PICKAXE) || stack.is(Items.STONE_PICKAXE) || stack.is(Items.IRON_PICKAXE)
-                || stack.is(Items.GOLDEN_PICKAXE) || stack.is(Items.DIAMOND_PICKAXE)
-                || stack.is(Items.NETHERITE_PICKAXE)) {
+                || stack.is(Items.GOLDEN_PICKAXE) || stack.is(Items.DIAMOND_PICKAXE)) {
             return PICKAXE;
         }
         if (stack.is(Items.WOODEN_SHOVEL) || stack.is(Items.STONE_SHOVEL) || stack.is(Items.IRON_SHOVEL)
-                || stack.is(Items.GOLDEN_SHOVEL) || stack.is(Items.DIAMOND_SHOVEL)
-                || stack.is(Items.NETHERITE_SHOVEL)) {
+                || stack.is(Items.GOLDEN_SHOVEL) || stack.is(Items.DIAMOND_SHOVEL)) {
             return SHOVEL;
         }
         if (stack.is(Items.WOODEN_HOE) || stack.is(Items.STONE_HOE) || stack.is(Items.IRON_HOE)
-                || stack.is(Items.GOLDEN_HOE) || stack.is(Items.DIAMOND_HOE)
-                || stack.is(Items.NETHERITE_HOE)) {
+                || stack.is(Items.GOLDEN_HOE) || stack.is(Items.DIAMOND_HOE)) {
             return HOE;
         }
         return null;

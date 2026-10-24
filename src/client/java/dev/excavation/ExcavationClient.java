@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 
 import java.util.Arrays;
@@ -71,23 +72,25 @@ public final class ExcavationClient implements ClientModInitializer {
     }
 
     private static void showMode(Minecraft client, int slot) {
-        if (ExcavationTools.maximumMode(client.player.getMainHandItem()) == 0) {
+        if (client.player == null || ExcavationTools.maximumMode(client.player.getMainHandItem()) == 0) {
             return;
         }
         int mode = MODES[slot];
-        Component subtitle = mode == 0
+        Component message = mode == 0
                 ? Component.translatable("message.excavation.disabled")
                 : Component.translatable("message.excavation.size", (mode * 2 + 1) + "x" + (mode * 2 + 1));
-        client.gui.hud.clearTitles();
-        client.gui.hud.setSubtitle(subtitle);
-        client.gui.hud.setTimes(0, 25, 5);
+        client.gui.hud.setOverlayMessage(message, false);
     }
 
     private static void renderOutline(LevelRenderContext context) {
         Minecraft client = Minecraft.getInstance();
-        if (client.player == null || !(client.hitResult instanceof BlockHitResult hit)) {
+        if (client.player == null || client.player.isSpectator() || !(client.hitResult instanceof BlockHitResult hit)) {
             return;
         }
+        if (hit.getType() != HitResult.Type.BLOCK) {
+            return;
+        }
+
         int mode = MODES[client.player.getInventory().getSelectedSlot()];
         int max = ExcavationTools.maximumMode(client.player.getMainHandItem());
         if (mode == 0 || mode > max) {
@@ -103,18 +106,49 @@ public final class ExcavationClient implements ClientModInitializer {
         var pose = context.poseStack();
         var camera = context.levelState().cameraRenderState.pos;
         BlockPos center = hit.getBlockPos();
-        for (int first = -radius; first <= radius; first++) {
-            for (int second = -radius; second <= radius; second++) {
-                BlockPos target = switch (normal) {
-                    case X -> center.offset(0, first, second);
-                    case Y -> center.offset(first, 0, second);
-                    case Z -> center.offset(first, second, 0);
-                };
-                pose.pushPose();
-                pose.translate(target.getX() - camera.x, target.getY() - camera.y, target.getZ() - camera.z);
-                context.submitNodeCollector().submitShapeOutline(pose, Shapes.block(), RenderTypes.lines(), 0xFFFFFFFF, 1.0F, false);
-                pose.popPose();
-            }
+
+        for (int i = -radius; i <= radius; i++) {
+            BlockPos edgeA = switch (normal) {
+                case X -> center.offset(0, i, -radius);
+                case Y -> center.offset(i, 0, -radius);
+                case Z -> center.offset(i, -radius, 0);
+            };
+            BlockPos edgeB = switch (normal) {
+                case X -> center.offset(0, i, radius);
+                case Y -> center.offset(i, 0, radius);
+                case Z -> center.offset(i, radius, 0);
+            };
+            pose.pushPose();
+            pose.translate(edgeA.getX() - camera.x, edgeA.getY() - camera.y, edgeA.getZ() - camera.z);
+            context.submitNodeCollector().submitShapeOutline(pose, Shapes.block(), RenderTypes.lines(), 0xFFF5F5F5, 1.2F, false);
+            pose.popPose();
+
+            pose.pushPose();
+            pose.translate(edgeB.getX() - camera.x, edgeB.getY() - camera.y, edgeB.getZ() - camera.z);
+            context.submitNodeCollector().submitShapeOutline(pose, Shapes.block(), RenderTypes.lines(), 0xFFF5F5F5, 1.2F, false);
+            pose.popPose();
+        }
+
+        for (int i = -radius; i <= radius; i++) {
+            BlockPos edgeA = switch (normal) {
+                case X -> center.offset(0, -radius, i);
+                case Y -> center.offset(-radius, 0, i);
+                case Z -> center.offset(-radius, i, 0);
+            };
+            BlockPos edgeB = switch (normal) {
+                case X -> center.offset(0, radius, i);
+                case Y -> center.offset(radius, 0, i);
+                case Z -> center.offset(radius, i, 0);
+            };
+            pose.pushPose();
+            pose.translate(edgeA.getX() - camera.x, edgeA.getY() - camera.y, edgeA.getZ() - camera.z);
+            context.submitNodeCollector().submitShapeOutline(pose, Shapes.block(), RenderTypes.lines(), 0xFFF5F5F5, 1.2F, false);
+            pose.popPose();
+
+            pose.pushPose();
+            pose.translate(edgeB.getX() - camera.x, edgeB.getY() - camera.y, edgeB.getZ() - camera.z);
+            context.submitNodeCollector().submitShapeOutline(pose, Shapes.block(), RenderTypes.lines(), 0xFFF5F5F5, 1.2F, false);
+            pose.popPose();
         }
     }
 }
